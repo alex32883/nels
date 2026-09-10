@@ -1,0 +1,10 @@
+{
+  "namespace": "default",
+  "thresholds": {
+    "pvc_usage_percent": 80,
+    "cpu_usage_pods_percent": 80,
+    "mem_usage_pods_percent": 80,
+    "cpu_vs_limits_percent": 80,
+    "memory_vs_limits_percent": 80
+  }
+}

@@ -1,0 +1,31 @@
+Please add the output file to the same location after script execution with a following information and corresponding values after execution.
+
+
+
+
+
+CONTAINER STATUS
+All containers Ready
+REPLICA STATUS
+Deployments / StatefulSets / ReplicationControllers ready
+DAEMONSET REPLICA STATUS
+Desired vs ready
+RESTARTS
+Restart count ≤ 5
+PVC STATUS
+All PVCs Bound
+PVC USAGE
+Volume use ≤ 80%
+CPU USAGE/PODS
+CPU vs limits ≤ 80%
+MEM USAGE/PODS
+Memory vs limits ≤ 80%
+POD STATUS
+Running or Succeeded
+NODE STATUS
+All nodes Ready
+
+Add to config file a thresholds for :
+ script 
+PVC USAGE, CPU USAGE/PODS, MEM USAGE/PODS, Memory vs limits, CPU vs limits
+

@@ -1,26 +1,111 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f3ece0;
+  --paper-2: #fff8ee;
+  --ink: #241c14;
+  --muted: #7a6c5d;
+  --pine: #2f4a3c;
+  --copper: #c45c26;
+  --line: #e3d6c4;
+  --danger: #8f2d2d;
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --font-sans: var(--font-figtree);
+  --font-serif: var(--font-fraunces);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-figtree);
+  --font-serif: var(--font-fraunces);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--paper);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(196, 92, 38, 0.08), transparent),
+    radial-gradient(900px 400px at 100% 0%, rgba(47, 74, 60, 0.08), transparent),
+    var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-serif {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.btn-primary {
+  border-radius: 999px;
+  background: var(--pine);
+  color: #f4efe6;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #3b5c4b;
+}
+
+.btn-ghost {
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  padding: 0.85rem 1rem;
+}
+
+.tag {
+  border-radius: 999px;
+  background: rgba(47, 74, 60, 0.1);
+  padding: 0.1rem 0.5rem;
+  font-size: 0.7rem;
+  color: var(--pine);
+}
+
+.priority-dot {
+  height: 0.55rem;
+  width: 0.55rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--muted);
+}
+
+.priority-dot[data-p="high"] {
+  background: var(--copper);
+}
+
+.priority-dot[data-p="medium"] {
+  background: var(--pine);
+}
+
+.priority-dot[data-p="low"] {
+  background: #b7a48d;
 }

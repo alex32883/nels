@@ -1,0 +1,21 @@
+netes environment create a python script using python3 command that will execute a set of 
+kubectl commands and produce a report in a similar way:
+CHECK CONTAINER STATUS ...........................PASSED
+CHECK REPLICA STATUS .............................PASSED
+CHECK DAEMONSET REPLICA STATUS ...................PASSED
+CHECK RESTARTS ...................................PASSED
+CHECK PVC STATUS .................................PASSED
+CHECK PVC USAGE ..................................PASSED
+CHECK CPU USAGE/PODS .............................PASSED
+CHECK MEM USAGE/PODS .............................PASSED
+CHECK POD STATUS .................................PASSED
+CHECK NODE STATUS ................................PASSED
+
+Commands to be used:
+
+kubectl get <RESOURCE> -n $NAMESPACE
+
+It must be a config file created that will 
+have information about $NAMESPACE, later more informatin will be added to 
+a config file
+

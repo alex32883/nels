@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="108" fill="#2F4A3C"/>
+  <rect x="96" y="118" width="320" height="292" rx="32" fill="#F4EFE6"/>
+  <rect x="96" y="118" width="320" height="72" fill="#C45C26"/>
+  <rect x="96" y="118" width="320" height="32" rx="32" fill="#C45C26"/>
+  <circle cx="176" cy="154" r="16" fill="#F4EFE6"/>
+  <circle cx="336" cy="154" r="16" fill="#F4EFE6"/>
+  <text x="256" y="352" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="168" font-weight="700" fill="#2F4A3C">N</text>
+</svg>
