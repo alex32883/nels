@@ -34,7 +34,7 @@ export function TasksView() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="max-w-3xl">
       <p className="text-sm tracking-wide text-[var(--muted)] uppercase">Tasks</p>
       <h1 className="font-serif text-4xl">What needs doing</h1>
 

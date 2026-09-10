@@ -30,8 +30,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-[var(--paper)] text-[var(--ink)]">
-      <div className="mx-auto flex min-h-dvh max-w-7xl">
-        <aside className="sticky top-0 hidden h-dvh w-56 shrink-0 flex-col bg-[var(--pine)] px-4 py-6 text-[#f4efe6] md:flex">
+      <div className="flex min-h-dvh w-full">
+        <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col bg-[var(--pine)] px-4 py-6 text-[#f4efe6] md:flex">
           <Link href="/" className="mb-8 px-2">
             <div className="font-serif text-3xl leading-none tracking-tight">Nels</div>
             <div className="mt-1 text-xs tracking-wide text-[#f4efe6]/70">

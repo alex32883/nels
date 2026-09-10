@@ -62,7 +62,7 @@ function NoteForm({ note }: { note: Note }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="max-w-3xl">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link href="/notes" className="text-sm text-[var(--muted)] hover:text-[var(--ink)]">
           ← Notes

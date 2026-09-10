@@ -54,7 +54,7 @@ export function SettingsView() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-10">
+    <div className="max-w-2xl space-y-10">
       <div>
         <p className="text-sm tracking-wide text-[var(--muted)] uppercase">Settings</p>
         <h1 className="font-serif text-4xl">This device</h1>

@@ -46,7 +46,7 @@ export function PlannerView() {
   }, [events]);
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm tracking-wide text-[var(--muted)] uppercase">Planner</p>

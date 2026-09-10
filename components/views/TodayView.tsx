@@ -20,7 +20,7 @@ export function TodayView() {
     !agenda.unscheduled.length;
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="max-w-3xl">
       <p className="text-sm tracking-wide text-[var(--muted)] uppercase">Today</p>
       <h1 className="font-serif text-4xl tracking-tight text-[var(--ink)] md:text-5xl">
         {formatLongDate(today)}

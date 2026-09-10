@@ -28,7 +28,7 @@ export function NotesView() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="max-w-4xl">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm tracking-wide text-[var(--muted)] uppercase">Notes</p>
