@@ -34,10 +34,19 @@ export type CalendarEvent = {
   updatedAt: number;
 };
 
+export type ItemKind = "note" | "task" | "event";
+
+export type Tombstone = {
+  id: string;
+  kind: ItemKind;
+  deletedAt: number;
+};
+
 export type BackupPayload = {
-  version: 1;
+  version: 1 | 2;
   exportedAt: number;
   notes: Note[];
   tasks: Task[];
   events: CalendarEvent[];
+  tombstones?: Tombstone[];
 };

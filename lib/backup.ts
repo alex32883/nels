@@ -1,4 +1,5 @@
 import { clearAllData, db } from "@/lib/db";
+import { parseTombstone } from "@/lib/snapshot";
 import type { BackupPayload, CalendarEvent, Note, Task } from "@/lib/types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -59,17 +60,19 @@ function parseEvent(value: unknown): CalendarEvent | undefined {
 }
 
 export async function exportBackup(): Promise<BackupPayload> {
-  const [notes, tasks, events] = await Promise.all([
+  const [notes, tasks, events, tombstones] = await Promise.all([
     db.notes.toArray(),
     db.tasks.toArray(),
     db.events.toArray(),
+    db.tombstones.toArray(),
   ]);
   return {
-    version: 1,
+    version: 2,
     exportedAt: Date.now(),
     notes,
     tasks,
     events,
+    tombstones,
   };
 }
 
@@ -86,15 +89,19 @@ export function parseBackup(raw: unknown): BackupPayload {
   const events = Array.isArray(raw.events)
     ? raw.events.map(parseEvent).filter((item): item is CalendarEvent => Boolean(item))
     : [];
+  const tombstones = Array.isArray(raw.tombstones)
+    ? raw.tombstones.map(parseTombstone).filter((item): item is NonNullable<typeof item> => Boolean(item))
+    : [];
   if (notes.length + tasks.length + events.length === 0 && !Array.isArray(raw.notes)) {
     throw new Error("Backup has no notes, tasks, or events.");
   }
   return {
-    version: 1,
+    version: 2,
     exportedAt: typeof raw.exportedAt === "number" ? raw.exportedAt : Date.now(),
     notes,
     tasks,
     events,
+    tombstones,
   };
 }
 
@@ -102,14 +109,23 @@ export async function importBackup(
   payload: BackupPayload,
   mode: "merge" | "replace",
 ): Promise<void> {
-  await db.transaction("rw", db.notes, db.tasks, db.events, async () => {
-    if (mode === "replace") {
-      await clearAllData();
-    }
+  if (mode === "replace") {
+    await clearAllData({ sync: false });
+  }
+  await db.transaction("rw", db.notes, db.tasks, db.events, db.tombstones, async () => {
     await db.notes.bulkPut(payload.notes);
     await db.tasks.bulkPut(payload.tasks);
     await db.events.bulkPut(payload.events);
+    if (payload.tombstones?.length) await db.tombstones.bulkPut(payload.tombstones);
+    const liveIds = [
+      ...payload.notes.map((item) => item.id),
+      ...payload.tasks.map((item) => item.id),
+      ...payload.events.map((item) => item.id),
+    ];
+    if (liveIds.length) await db.tombstones.bulkDelete(liveIds);
   });
+  const { scheduleSync } = await import("@/lib/sync");
+  scheduleSync();
 }
 
 export function downloadJson(filename: string, data: unknown): void {
@@ -123,3 +139,4 @@ export function downloadJson(filename: string, data: unknown): void {
   link.click();
   URL.revokeObjectURL(url);
 }
+

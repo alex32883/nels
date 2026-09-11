@@ -1,14 +1,17 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { downloadJson, exportBackup, importBackup, parseBackup } from "@/lib/backup";
 import { todayISO } from "@/lib/dates";
 import { clearAllData } from "@/lib/db";
 import { useCounts } from "@/lib/hooks";
 import { COMMAND_HELP } from "@/lib/parse-command";
+import { runSync, subscribeSync } from "@/lib/sync";
 import { useToast } from "@/components/Toast";
 
 export function SettingsView() {
+  const router = useRouter();
   const { push } = useToast();
   const counts = useCounts();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -16,6 +19,8 @@ export function SettingsView() {
   const [online, setOnline] = useState(
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
+  const [syncState, setSyncState] = useState<"idle" | "syncing" | "error">("idle");
+  const [cloud, setCloud] = useState<boolean | null>(null);
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -26,6 +31,17 @@ export function SettingsView() {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", off);
     };
+  }, []);
+
+  useEffect(() => subscribeSync(setSyncState), []);
+
+  useEffect(() => {
+    void fetch("/api/status")
+      .then((response) => response.json())
+      .then((data: { storageConfigured?: boolean }) => {
+        setCloud(Boolean(data.storageConfigured));
+      })
+      .catch(() => setCloud(false));
   }, []);
 
   async function onExport() {
@@ -48,21 +64,61 @@ export function SettingsView() {
   }
 
   async function onClear() {
-    if (!confirm("Delete all notes, tasks, and events on this device?")) return;
+    if (
+      !confirm(
+        "Delete all notes, tasks, and events? This clears this device and, once synced, the shared list on other devices too.",
+      )
+    ) {
+      return;
+    }
     await clearAllData();
-    push("All local data cleared");
+    push("All data cleared");
   }
+
+  async function onSyncNow() {
+    const result = await runSync();
+    if (result?.ok) push("Synced");
+    else push(result?.error || "Sync failed", "err");
+  }
+
+  async function onLogout() {
+    await fetch("/api/logout", { method: "POST" });
+    router.replace("/login");
+    router.refresh();
+  }
+
+  const syncLabel =
+    syncState === "syncing" ? "Syncing…" : syncState === "error" ? "Sync error" : "Synced";
 
   return (
     <div className="max-w-2xl space-y-10">
       <div>
         <p className="text-sm tracking-wide text-[var(--muted)] uppercase">Settings</p>
-        <h1 className="font-serif text-4xl">This device</h1>
+        <h1 className="font-serif text-4xl">Account & data</h1>
         <p className="mt-3 text-[var(--muted)]">
-          Nels keeps your data in this browser (IndexedDB). Hosting on Vercel only serves the
-          app. Export a backup if you switch machines.
+          After you sign in, Nels keeps a local copy for offline use and syncs the same notes,
+          tasks, and events to every device that opens this site.
         </p>
       </div>
+
+      <section className="rounded-3xl border border-[var(--line)] bg-[var(--paper-2)] p-6">
+        <h2 className="font-serif text-2xl">Sync</h2>
+        <p className="mt-2 text-sm text-[var(--muted)]">
+          Status: {syncLabel}. Network: {online ? "online" : "offline — local data still works"}.
+        </p>
+        <p className="mt-2 text-sm text-[var(--muted)]">
+          Shared cloud store:{" "}
+          {cloud === null ? "…" : cloud ? "connected" : "not set (local file only until Redis is added on Vercel)"}
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button type="button" className="btn-primary" onClick={() => void onSyncNow()}>
+            Sync now
+          </button>
+          <button type="button" className="btn-ghost" onClick={() => void onLogout()}>
+            Sign out
+          </button>
+        </div>
+      </section>
 
       <section className="rounded-3xl border border-[var(--line)] bg-[var(--paper-2)] p-6">
         <h2 className="font-serif text-2xl">Storage</h2>
@@ -72,16 +128,13 @@ export function SettingsView() {
           <Stat label="Open tasks" value={counts?.openTasks} />
           <Stat label="Events" value={counts?.events} />
         </dl>
-        <p className="mt-4 text-sm text-[var(--muted)]">
-          Network: {online ? "online" : "offline — your local data still works"}
-        </p>
       </section>
 
       <section className="rounded-3xl border border-[var(--line)] bg-[var(--paper-2)] p-6">
         <h2 className="font-serif text-2xl">Backup</h2>
         <p className="mt-2 text-sm text-[var(--muted)]">
           JSON export/import. Merge keeps existing items and overwrites matching ids. Replace
-          wipes this device first.
+          wipes this device first, then syncs.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button type="button" className="btn-primary" onClick={onExport}>
@@ -121,7 +174,7 @@ export function SettingsView() {
           }}
         />
         <button type="button" className="mt-6 text-sm text-[var(--danger)]" onClick={onClear}>
-          Clear all data on this device
+          Clear all data
         </button>
       </section>
 
@@ -133,7 +186,7 @@ export function SettingsView() {
             In Chrome or Edge: install from the address bar. On iPhone: Share → Add to Home
             Screen.
           </li>
-          <li>After that, Today, Notes, Tasks, Calendar, and Planner work without a network.</li>
+          <li>Edits made offline upload the next time this device is online.</li>
         </ol>
       </section>
 

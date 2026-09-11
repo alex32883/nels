@@ -1,49 +1,44 @@
 # Nels
 
-Personal planner, notes, tasks, and calendar. Data stays in this browser and the app works offline after the first visit. Deploy it to Vercel with no environment variables.
+Personal planner, notes, tasks, and calendar. Sign in with a password. Data is stored on the device for offline use and synced so every browser sees the same list.
 
 ## Run locally
 
 ```bash
 npm install
+```
+
+Copy [`.env.example`](.env.example) to `.env.local` and set a password:
+
+```
+NELS_PASSWORD=your-password
+```
+
+Then:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) and sign in.
 
-- **Today** — due tasks, today’s events, pinned notes
-- **Notes** — search, tags, pin, preview (`**bold**`, lists, headings)
-- **Tasks** — due dates, priority, complete
-- **Calendar** — month view and per-day events
-- **Planner** — week and day views
-- **Assistant** — press `/` and type:
-  - `note #ideas weekend trip`
-  - `task submit report friday`
-  - `event dentist tomorrow 3pm`
-  - `remind me tomorrow to call Jan`
-
-Settings exports and imports a JSON backup. Clearing data only affects this device.
-
-## Offline and install
-
-1. Open the site once while online (so the service worker can cache the app).
-2. Install: Chrome/Edge address-bar install, or iOS Share → Add to Home Screen.
-3. After that, previously opened pages load without a network. Notes, tasks, and events are stored in IndexedDB on the device.
+Without Redis, local sync uses a file in `.data/` on that computer. Add the same Upstash Redis env vars as Vercel if you want localhost to match production.
 
 ## Deploy to Vercel
 
-No env vars. Framework preset: Next.js.
+1. Push the repo and import it at [vercel.com/new](https://vercel.com/new) (Next.js preset).
+2. In the Vercel project: **Storage → Create Database → Upstash Redis** (this sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`).
+3. In **Settings → Environment Variables**, add:
+   - `NELS_PASSWORD` — the login password (all devices use this)
+   - optional `NELS_SESSION_SECRET` — a long random string
+4. Redeploy.
 
-1. Push this repo to GitHub (keep `k8s_health_check.py` and the Task files if you still want them).
-2. Import the project at [vercel.com/new](https://vercel.com/new).
-3. Deploy. Root directory is the repo root.
+After that, Chrome, Edge, phone, and desktop all share the same notes, tasks, and events once they sign in with that password.
 
-Or with the Vercel CLI:
+## Offline
 
-```bash
-npx vercel
-```
+Open the site once while online. Edits made offline upload the next time the device is connected.
 
 ## Stack
 
-Next.js App Router, Tailwind CSS, Dexie (IndexedDB), Serwist (service worker).
+Next.js App Router, Tailwind CSS, Dexie (IndexedDB), Serwist (service worker), Upstash Redis (shared store).
